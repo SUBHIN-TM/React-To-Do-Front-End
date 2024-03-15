@@ -3,6 +3,9 @@
 import { useState } from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function Login() {
     const[name,setName]=useState("");
@@ -14,12 +17,24 @@ function Login() {
 
     const handleSubmit =async (event)=>{
     event.preventDefault();
+     if(!name || !password){
+     return toast.error("Please Fill The Field")
+     }
+
     try {
         console.log(name , password);
        const response=await axios.post('http://localhost:4000/login',{
         name,password
        });
-       console.log("response is",response.data);
+       if(response.data.invalidUser){
+        console.log("invalid");
+        toast.error("Invalid User")
+       }else if(response.data.passwordMissmatch){
+        toast.error("Wrong Password")
+       }else{
+      alert("dashboard")
+       }
+      
     } catch (error) {
         console.error("Login Error");
     }
@@ -30,8 +45,8 @@ function Login() {
       <h1 className="p-4 my-4 text-2xl font-serif ">To Do App</h1>
       <div className="border-[1px] border-black rounded-lg p-8 flex   h-[300px]">
         <form onSubmit={handleSubmit} className="mt-4" action="">
-          <label className="mr-9 " htmlFor="userName">
-            Name
+          <label className="mr-10 " htmlFor="userName">
+            Email
           </label>
           <input className="mb-6 pl-2 text-gray-500 hover:border-gray-500" type="text" name="name" id="name" value={name} onChange={(e)=> onChangeFunction(e)} />
           <br />
@@ -45,6 +60,7 @@ function Login() {
         </form>
        
       </div>
+      <ToastContainer />
     </div>
   );
 }
