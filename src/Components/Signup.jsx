@@ -2,10 +2,12 @@
 import { useRef, useState } from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Signup =()=>{
 const [mailExist,setMailExist] =useState("")
 const [error, setError] = useState("");
+
 
  const nameRef=useRef(null)
  const mailRef=useRef(null)
@@ -30,6 +32,13 @@ const [error, setError] = useState("");
         name,mail,password
        });
        console.log("response is",response.data);
+       if(response.data.registered){
+        toast.success("Registration successful. Redirecting to login page...", {
+          onClose: () => {
+            window.location.href = '/';
+          }
+        });
+       }
        if(response.data.mailExists){
         setMailExist("Email Already Exists")
        }else{
@@ -70,7 +79,9 @@ const [error, setError] = useState("");
         </form>
        
       </div>
+      <ToastContainer />
     </div>
+    
     )
 }
 
