@@ -2,7 +2,7 @@
 // import React, { useRef } from "react";
 import { useState } from "react";
 import axios from "axios";
-// import {Link} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 function Login() {
     const[name,setName]=useState("");
@@ -41,7 +41,7 @@ function Login() {
           <input className="mb-8  pl-2 text-gray-500 hover:border-gray-500" type="password" name="password" id="password" value={password} onChange={(e)=> onChangeFunction(e)} />
           <br />
           <button type="submit" className="p-1 bg-white font-semibold rounded-md px-4 ml-[90px] hover:bg-slate-700 hover:text-white">Login</button>
-          <p className="mt-10 italic">Don't Have an account <span className="text-blue-700">Signup</span> Here</p>
+          <p className="mt-10 italic">Don't Have an account <span className="text-blue-700"><Link to='/signup'>Signup</Link></span> Here</p>
         </form>
        
       </div>
