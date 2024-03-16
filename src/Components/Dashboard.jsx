@@ -10,70 +10,90 @@ import TaskLists from './TaskLists';
 
 function Dashboard() {
     const navigate = useNavigate()
-    const [tasks, setTasks] = useState()
-    console.log(tasks)
+    const [tasks, setTasks] = useState([])
+    console.log("tasks",tasks)
     const [newTask, setNewTask] = useState("")
     const [newDate, setNewDate] = useState("")
     const [userName, setUserName] = useState("")
-    const [databseTasks, setDatabaseTasks] = useState([])
 
     useEffect(() => {
         dashboardGet()
-    }, [tasks])
+    }, [])
 
-    useEffect(() => {
-        if (tasks) {
-            postTask()
-        }
-
-    }, [tasks]);
 
     const onchangingDate = (e) => {
         setNewDate(e.target.value)
-    }
+    };
+
     const onchangingTask = (e) => {
         setNewTask(e.target.value)
+    };
+
+    const dashboardGet = async () => { //CALLED TO GET THE WHOLE DATAS OF USER TO GET
+        try {
+            const response = await axios.get('http://localhost:4000/dashboard')
+            if (response.data.success) {
+                setTasks(response.data.datas)  //DATA BASE DATAS ARE ADDED TO LOCAL STATE
+                setUserName(response.data.name)
+            } else {
+                navigate('/') //IF ANY EROR OCCUR RELOGIN 
+            }
+        } catch (error) {
+            console.error("Error from fetching dashboard geting datas",error);
+        }
     }
+ 
 
     const taskAdd = () => {
         if (!newTask || !newDate) {
             return toast.error("Cant be Empty Field")
         } else {
-            setTasks({ date: newDate, task: newTask, status: "Pending" })
+            const newTaskObjetc={ date: newDate, task: newTask, status: "Pending" }
+            setTasks([...tasks,newTaskObjetc])
             setNewDate("")
             setNewTask("")
+            postTask(newTaskObjetc)  //NEW  ADDED DATA SEND TO FUNCTION FOR SAVE IN DATABASE
         }
     }
 
-    const dashboardGet = async () => {
-        const response = await axios.get('http://localhost:4000/dashboard')
-        if (response.data.success) {
-            setUserName(response.data.name)
-            setDatabaseTasks(response.data.datas)
-        } else {
-            navigate('/')
-        }
+ 
+    const postTask = async (newTaskObjetc) => {//NEW DATA CAME HERE AND SEND TO THE SERVER FOR WRITE IN DATA BASE
+        try {
+            const response = await axios.post('http://localhost:4000/addTask', {newTaskObjetc})
+            if (response.data.added) {
+                toast.success("Task Added Successfully")
+            } else {
+                toast.error("Unexpected Error Occured")
+            }      
+        } catch (error) {
+            console.error("Error from posting new task to database",error);
+        }   
     }
 
-    const postTask = async () => {
-        const response = await axios.post('http://localhost:4000/addTask', { tasks })
-        if (response.data.added) {
-            toast.success("Task Added Successfully")
-        } else {
-            toast.error("Unexpected Error Occured")
-        }
-    }
-
-    const logout = async () => {
+    const logout = async () => { //USER LOGOUT 
         localStorage.removeItem('token');
         axios.defaults.headers.common['Authorization'] = null;
         navigate('/');
     }
-
+   
+    const deleteTask= async(id)=>{
+        try {
+            let filterDeletedTask=tasks.filter((task) => task._id !== id)
+        setTasks(filterDeletedTask)
+        console.log("deleted",filterDeletedTask,id);
+        let response=await axios.delete('http://localhost:4000/deleteTask/'+id)
+        if(response.status==200){
+            toast.success(response.data.message)    
+        }
+            
+        } catch (error) {         
+            toast.error("Cant delete right now ")
+            console.error("error",error)            
+        }        
+    }
 
     return (
         <div>
-
             <h1 className='my-3 text-center text-xl font-semibold underline'> TO DO </h1>
             <div className='flex items-center'>
                 {userName && <p className='font-mono italic ml-6 '>{userName}</p>}
@@ -93,16 +113,18 @@ function Dashboard() {
             </div>
             <div className='mt-[40px] border m-auto'>
 
-                <table className='border-collapse border border-gray-400 text-center'>
-                    <tr>
-                        <th border className='border p-2 '>Sl No</th>
-                        <th className='border p-2 w-2/12'>Date</th>
-                        <th className='border w-4/12'>Task</th>
-                        <th className='border p-2 w-1/12'>Status</th>
-                        <th className='border p-2 w-2/12'>Action</th>
-                    </tr>
-                    {databseTasks.map((dataTasks, index) => {
-                        return (
+            <table className='border-collapse border border-gray-400 text-center'>
+                    <thead>
+                        <tr>
+                            <th className='border p-2 '>Sl No</th>
+                            <th className='border p-2 w-2/12'>Date</th>
+                            <th className='border w-4/12'>Task</th>
+                            <th className='border p-2 w-1/12'>Status</th>
+                            <th className='border p-2 w-2/12'>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tasks.map((dataTasks, index) => (
                             <tr key={dataTasks._id}>
                                 <td>{index + 1}</td>
                                 <td>{dataTasks.date}</td>
@@ -115,19 +137,13 @@ function Dashboard() {
                                     </select>
                                 </td>
                                 <td className="flex justify-around">
-                                    <button>Delete</button>
+                                    <button onClick={()=>deleteTask(dataTasks._id)}>Delete</button>
                                     <button>Edit</button>
                                 </td>
-
                             </tr>
-
-                        )
-                    })}
-
-
-
+                        ))}
+                    </tbody>
                 </table>
-
             </div>
             <ToastContainer />
         </div>
