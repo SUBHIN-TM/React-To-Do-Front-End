@@ -1,13 +1,13 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useRef, useState } from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const Signup =()=>{
 const [mailExist,setMailExist] =useState("")
 const [error, setError] = useState("");
-
+const navigate=useNavigate()
 
  const nameRef=useRef(null)
  const mailRef=useRef(null)
@@ -35,7 +35,7 @@ const [error, setError] = useState("");
        if(response.data.registered){
         toast.success("Registration successful. Redirecting to login page...", {
           onClose: () => {
-            window.location.href = '/';
+            navigate('/')
           }
         });
        }

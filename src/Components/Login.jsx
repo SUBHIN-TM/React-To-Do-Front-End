@@ -1,15 +1,25 @@
 /* eslint-disable react/no-unescaped-entities */
 // import React, { useRef } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
 function Login() {
+    
     const[name,setName]=useState("");
     const[password,setPassword]=useState("");
+    const navigate=useNavigate();
+
+    useEffect(() => {
+      const token=localStorage.getItem('token')
+      if(token){
+        navigate('/dashboard');
+      }
+    },[])
+    
  
     let onChangeFunction =(e)=>{
      e.target.name=="name"?setName(e.target.value) :setPassword(e.target.value);
@@ -32,7 +42,9 @@ function Login() {
        }else if(response.data.passwordMissmatch){
         toast.error("Wrong Password")
        }else{
-      alert("dashboard")
+        console.log(response.data);
+        localStorage.setItem('token',response.data.token)
+        navigate('/dashboard')
        }
       
     } catch (error) {
