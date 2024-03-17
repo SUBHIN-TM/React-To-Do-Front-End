@@ -143,8 +143,8 @@ function Dashboard() {
 
   console.log("edited prefill", editedTask);
   return (
-    <div>
-      <h1 className="my-3 text-center text-xl font-semibold underline">
+    <div className="bg-gray-300 min-h-screen ">
+      <h1 className=" text-center text-xl font-semibold underline pt-9">
         TO DO
       </h1>
       <div className="flex items-center">
@@ -184,31 +184,31 @@ function Dashboard() {
             onChange={(e) => onchangingTask(e)}
           />
           <button
-            className="mt-2 sm:mt-0 ml-[70px] px-2 sm:ml-3 font-bold rounded-lg"
+            className="mt-2 sm:mt-0 ml-[70px] px-2 sm:ml-3 font-bold rounded-lg text-white bg-black"
             onClick={() => taskAdd()}
           >
-            Add
+            ADD
           </button>
         </div>
       </div>
       <div className="mt-[40px]  overflow-auto sm:overflow-hidden flex justify-center">
-        <table className="border-collapse border  sm:w-11/12 border-gray-400 text-center">
-          <thead className="text-center">
+        <table className=" border-2 border-black  sm:w-11/12 text-center">
+          <thead className="text-center border-black">
             <tr className="">
-              <th className="border p-2 w-1/12 ">No</th>
-              <th className="border w-2/12 sm:w-auto">Date</th>
-              <th className="border w-2/12 sm:w-auto whitespace-normal">
+              <th className="border border-black p-2 w-1/12 ">No</th>
+              <th className="border border-black w-2/12 sm:w-auto">Date</th>
+              <th className="border border-black w-2/12 sm:w-auto whitespace-normal">
                 Task
               </th>
-              <th className="border w-2/12 sm:w-auto">Status</th>
-              <th className="border w-2/12 sm:w-auto">Action</th>
+              <th className="border border-black w-2/12 sm:w-auto">Status</th>
+              <th className="border border-black w-2/12 sm:w-auto">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className=" border border-black">
             {tasks.map((dataTasks, index) => (
-              <tr className="border-2 p-2" key={dataTasks._id}>
-                <td className="border">{index + 1}</td>
-                <td className="border">
+              <tr className="border border-black  p-2" key={dataTasks._id}>
+                <td className="border border-black">{index + 1}</td>
+                <td className="border border-black">
                   {editTaskId == dataTasks._id ? (
                     <input
                       type="date"
@@ -221,7 +221,7 @@ function Dashboard() {
                     dataTasks.date.split("T")[0]
                   )}
                 </td>
-                <td className="border-2 whitespace-normal">
+                <td className="border border-black whitespace-normal">
                   {editTaskId == dataTasks._id ? (
                     <input
                       type="text"
@@ -234,7 +234,7 @@ function Dashboard() {
                     dataTasks.task
                   )}
                 </td>
-                <td className="border">
+                <td className="border border-black">
                   {editTaskId == dataTasks._id ? (
                     <select
                       name=""
