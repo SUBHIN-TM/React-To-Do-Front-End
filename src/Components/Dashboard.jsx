@@ -10,11 +10,14 @@ import TaskLists from './TaskLists';
 
 function Dashboard() {
     const navigate = useNavigate()
-    const [tasks, setTasks] = useState([])
-    console.log("tasks",tasks)
-    const [newTask, setNewTask] = useState("")
+    const [tasks, setTasks] = useState([])  //SET TO STORE ALL TASKS 
+    const [newTask, setNewTask] = useState("") 
     const [newDate, setNewDate] = useState("")
-    const [userName, setUserName] = useState("")
+    const [userName, setUserName] = useState("") //TO SHOW USER NAME ON THE TOP
+     console.log("render time");
+    const [editTaskId,setEditTaskId] =useState("")
+    const [editedTask,setEditedTask] =useState({date:"",task:"",status:""});
+
 
     useEffect(() => {
         dashboardGet()
@@ -41,9 +44,10 @@ function Dashboard() {
         } catch (error) {
             console.error("Error from fetching dashboard geting datas",error);
         }
+
     }
  
-
+  console.log("tasks",tasks);
     const taskAdd = () => {
         if (!newTask || !newDate) {
             return toast.error("Cant be Empty Field")
@@ -92,6 +96,29 @@ function Dashboard() {
         }        
     }
 
+const editTaskID=(task)=>{
+setEditTaskId(task._id)
+const dateParts = task.date.split('T')[0].split('-');
+const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+setEditedTask({ date: formattedDate.split('-').reverse().join("-"), task: task.task, status: task.status });
+}
+
+const cancelEdit=()=>{
+    setEditTaskId(null)
+}
+
+const saveEdit=(id)=>{
+   const updatedTask=tasks.map((task)=>{
+    if(id ==task._id){
+        return {...task,...editedTask}
+    }
+    return task;
+   })
+   setTasks(updatedTask)
+   setEditTaskId(null)
+}
+
+console.log("edited prefill",editedTask);
     return (
         <div>
             <h1 className='my-3 text-center text-xl font-semibold underline'> TO DO </h1>
@@ -127,18 +154,38 @@ function Dashboard() {
                         {tasks.map((dataTasks, index) => (
                             <tr key={dataTasks._id}>
                                 <td>{index + 1}</td>
-                                <td>{dataTasks.date}</td>
-                                <td>{dataTasks.task}</td>
+                                <td> {editTaskId == dataTasks._id ?
+                                      (<input type='date' value={editedTask.date} onChange={(e)=>setEditedTask({...editedTask,date:e.target.value})} ></input>)
+                                      :(dataTasks.date)
+                                    }
+                                </td>
+                                <td>{editTaskId == dataTasks._id ?
+                                (<input type='text' value={editedTask.task} onChange={(e)=>setEditedTask({...editedTask,task:e.target.value})} ></input>)
+                                 :(dataTasks.task)}  
+                                    </td>
                                 <td>
-                                    <select name="" id="">
-                                        <option value="">{dataTasks.status}</option>
-                                        <option value="">Done</option>
-                                        <option value="">Cancelled</option>
-                                    </select>
+                                    {editTaskId == dataTasks._id?
+                                   ( <select name="" id="" value={editedTask.status} onChange={(e)=>setEditedTask({...editedTask,status:e.target.value})}>
+                                   <option value="">Pending</option>
+                                   <option value="">Done</option>
+                                   <option value="">Cancelled</option>
+                               </select>) :
+                               (dataTasks.status)
+                               }            
                                 </td>
                                 <td className="flex justify-around">
-                                    <button onClick={()=>deleteTask(dataTasks._id)}>Delete</button>
-                                    <button>Edit</button>
+                                    {editTaskId == dataTasks._id ?(
+                                       <>
+                                       <button onClick={() => saveEdit(dataTasks._id)}>Save</button>
+                                       <button onClick={cancelEdit}>Cancel</button>
+                                     </>
+                                    ):(
+                                    <>
+                                     <button onClick={()=>deleteTask(dataTasks._id)}>Delete</button>
+                                    <button onClick={()=> editTaskID(dataTasks)}>Edit</button>
+                                    </>
+                                    )}
+                                   
                                 </td>
                             </tr>
                         ))}
