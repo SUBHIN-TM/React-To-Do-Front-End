@@ -191,9 +191,9 @@ function Dashboard() {
           </button>
         </div>
       </div>
-      <div className="mt-[40px]  overflow-auto sm:overflow-hidden flex justify-center">
-        <table className=" border-2 border-black  sm:w-11/12 text-center">
-          <thead className="text-center border-black">
+      <div className="mt-[40px]  overflow-auto sm:overflow-hidden flex justify-center ">
+        <table className=" border-2 border-black  sm:w-11/12 text-center ">
+          <thead className="text-center border-black ">
             <tr className="">
               <th className="border border-black p-2 w-1/12 ">No</th>
               <th className="border border-black w-2/12 sm:w-auto">Date</th>
