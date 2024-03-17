@@ -107,15 +107,26 @@ const cancelEdit=()=>{
     setEditTaskId(null)
 }
 
-const saveEdit=(id)=>{
-   const updatedTask=tasks.map((task)=>{
-    if(id ==task._id){
-        return {...task,...editedTask}
-    }
-    return task;
-   })
-   setTasks(updatedTask)
-   setEditTaskId(null)
+let modifiedAndMerged;
+const saveEdit=async (id)=>{
+try {
+    const updatedTask=tasks.map((task)=>{
+        if(id ==task._id){
+            modifiedAndMerged={...task,...editedTask}
+            return modifiedAndMerged
+        }
+        return task;
+       })
+       setTasks(updatedTask)
+       setEditTaskId(null)
+       let response=await axios.put('http://localhost:4000/editTask/'+id,{modifiedAndMerged})
+       if(response.status==200){
+        toast.success(response.data.message)
+       }
+} catch (error) {
+    toast.success("Cannot Perform Udate Now")
+    console.error(error)
+}
 }
 
 console.log("edited prefill",editedTask);
@@ -156,7 +167,7 @@ console.log("edited prefill",editedTask);
                                 <td>{index + 1}</td>
                                 <td> {editTaskId == dataTasks._id ?
                                       (<input type='date' value={editedTask.date} onChange={(e)=>setEditedTask({...editedTask,date:e.target.value})} ></input>)
-                                      :(dataTasks.date)
+                                      :(dataTasks.date.split("T")[0])
                                     }
                                 </td>
                                 <td>{editTaskId == dataTasks._id ?
