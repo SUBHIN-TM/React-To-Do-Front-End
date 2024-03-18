@@ -11,7 +11,7 @@ function Dashboard() {
   const [newTask, setNewTask] = useState("");
   const [newDate, setNewDate] = useState("");
   const [userName, setUserName] = useState(""); //TO SHOW USER NAME ON THE TOP
-  console.log("render time");
+  // console.log("render time");
   const [editTaskId, setEditTaskId] = useState("");
   const [editedTask, setEditedTask] = useState({
     date: "",
@@ -46,13 +46,14 @@ function Dashboard() {
     }
   };
 
-  console.log("tasks", tasks);
+  // console.log("tasks", tasks);
   const taskAdd = () => {
     if (!newTask || !newDate) {
       return toast.error("Cant be Empty Field");
     } else {
-      const newTaskObjetc = { date: newDate, task: newTask, status: "Pending" };
-      setTasks([...tasks, newTaskObjetc]);
+      let tempId=Date.now().toString(); //add temp id now it hasnt get id from server .so just to iterate key unique
+      const newTaskObjetc = {_id:tempId, date: newDate, task: newTask, status: "Pending" };
+      setTasks([...tasks, newTaskObjetc]); //new task added to existing task datas
       setNewDate("");
       setNewTask("");
       postTask(newTaskObjetc); //NEW  ADDED DATA SEND TO FUNCTION FOR SAVE IN DATABASE
@@ -67,6 +68,7 @@ function Dashboard() {
       });
       if (response.data.added) {
         toast.success("Task Added Successfully");
+        dashboardGet()
       } else {
         toast.error("Unexpected Error Occured");
       }
@@ -86,7 +88,6 @@ function Dashboard() {
     try {
       let filterDeletedTask = tasks.filter((task) => task._id !== id);
       setTasks(filterDeletedTask);
-      console.log("deleted", filterDeletedTask, id);
       let response = await axios.delete(
         "http://localhost:4000/deleteTask/" + id
       );
@@ -100,6 +101,7 @@ function Dashboard() {
   };
 
   const editTaskID = (task) => {
+    console.log("edit id ",task)
     setEditTaskId(task._id);
     const dateParts = task.date.split("T")[0].split("-");
     const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
@@ -141,7 +143,7 @@ function Dashboard() {
     }
   };
 
-  console.log("edited prefill", editedTask);
+  // console.log("edited prefill", editedTask);
   return (
     <div className="bg-gray-300 min-h-screen ">
       <h1 className=" text-center text-xl font-semibold underline pt-9">
